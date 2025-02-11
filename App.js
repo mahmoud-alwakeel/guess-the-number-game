@@ -6,49 +6,62 @@ import AppLoading from 'expo-app-loading';
 
 import StartGameScreen from './screens/start_game_screen';
 import GameScreen from './screens/game_screen';
-import colors  from './const/colors';
+import colors from './const/colors';
 import GameOverScreen from './screens/game_over_screen';
 
 export default function App() {
 
   const [userNumber, setUserNumber] = useState('')
   const [gameOver, setGameOver] = useState(false)
+  const [guessRounds, setGuessRounds] = useState(0)
 
   const [fontsLoaded] = useFonts({
     'open-sans-bold': require('./assets/fonts/OpenSans-Bold.ttf'),
     'open-sans': require('./assets/fonts/OpenSans-Regular.ttf')
   });
 
-  if(!fontsLoaded){
-    return <AppLoading/>
+  if (!fontsLoaded) {
+    return <AppLoading />
   }
-  
+
   function pickedNumberHandler(pickedNum) {
     setUserNumber(pickedNum);
+    setGameOver(false);
   }
 
-  let screen = <StartGameScreen onPickNum={pickedNumberHandler}/>
+  let screen = <StartGameScreen onPickNum={pickedNumberHandler} />
 
   function gameOverHandler() {
-    setGameOver(true)
+    setGameOver(true);
   }
 
   if (userNumber) {
-    screen = <GameScreen userNumber={userNumber} onGameOver={gameOverHandler}/>
+    screen = <GameScreen userNumber={userNumber} onGameOver={gameOverHandler} />
+  }
+
+  function onStartNewGameHandler() {
+    setUserNumber(null);
+    setGuessRounds(0);
   }
 
   if (userNumber && gameOver) {
-    screen = <GameOverScreen/>
+    screen = <GameOverScreen
+      userNum={userNumber}
+      roundesNum={guessRounds}
+      onRestartGame={onStartNewGameHandler} />
   }
 
   return (
-    <LinearGradient colors={[colors.primary800, colors.accent500]} style={styles.rootScreen}>
-      <ImageBackground 
-      source={require('./assets/images/background.png')} 
-      resizeMode='cover' style={styles.rootScreen}
-      imageStyle={styles.image}>
+    <LinearGradient
+      colors={[colors.primary800, colors.accent500]}
+      style={styles.rootScreen}
+    >
+      <ImageBackground
+        source={require('./assets/images/background.png')}
+        resizeMode='cover' style={styles.rootScreen}
+        imageStyle={styles.image}>
         <SafeAreaView style={styles.rootScreen}>
-        {screen}
+          {screen}
         </SafeAreaView>
       </ImageBackground>
     </LinearGradient>

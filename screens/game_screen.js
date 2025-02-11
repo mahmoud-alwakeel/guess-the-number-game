@@ -1,4 +1,4 @@
-import { StyleSheet, View, Text, Alert } from "react-native";
+import { StyleSheet, View, Text, Alert, FlatList } from "react-native";
 import {Ionicons} from '@expo/vector-icons'
 import { useEffect, useState } from "react";
 
@@ -7,6 +7,7 @@ import NumberContainer from "../components/game/number_container";
 import PrimaryButton from "../components/ui/primary_button";
 import InstructionText from "../components/ui/instruction_text";
 import Card from "../components/ui/card";
+import GuessLogItem from "../components/game/guess_log_item";
 
 function generateRandomNumber(min, max, exclude) {
     const rndmNum = Math.floor(Math.random() * (max - min)) + min;
@@ -23,12 +24,18 @@ let maxBoundary = 100;
 function GameScreen({ userNumber, onGameOver }) {
     const initialGuess = generateRandomNumber(1, 100, userNumber);
     const [currentGuess, setCurrentGuess] = useState(initialGuess);
+    const [guessRounds, setGuessRounds] = useState([]);
 
     useEffect(() => {
         if (currentGuess === userNumber) {
             onGameOver();
         }
     }, [currentGuess, userNumber, onGameOver])
+
+    useEffect(() => {
+        minBoundary = 1;
+        maxBoundary = 100;
+    }, []);
 
     function nextGuessHandler(direction) {
         if (
@@ -46,7 +53,10 @@ function GameScreen({ userNumber, onGameOver }) {
         }
         const newRndmNum = generateRandomNumber(minBoundary, maxBoundary, currentGuess);
         setCurrentGuess(newRndmNum);
+        setGuessRounds((previousGuessRounds) => [newRndmNum, ...previousGuessRounds ])
     }
+
+    const guessRoundsListLength = guessRounds.length;
     return (
         <View style={styles.screen}>
             <Title>Opponent's guess</Title>
@@ -67,6 +77,14 @@ function GameScreen({ userNumber, onGameOver }) {
                     </View>
                 </View>
             </Card>
+            <View>
+                {/* {guessRounds.map(guessRound => <Text key={guessRound}>{guessRound}</Text>)} */}
+                <FlatList 
+                data={guessRounds} 
+                renderItem={(itemData) => <GuessLogItem roundNum={guessRoundsListLength - itemData.index } guess={itemData.item}/>}
+                keyExtractor={(item) => item}
+                />
+            </View>
         </View>
     );
 }
