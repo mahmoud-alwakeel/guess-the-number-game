@@ -1,5 +1,5 @@
 import { StyleSheet, View, Text, Alert, FlatList } from "react-native";
-import {Ionicons} from '@expo/vector-icons'
+import { Ionicons } from '@expo/vector-icons'
 import { useEffect, useState } from "react";
 
 import Title from "../components/ui/title";
@@ -28,7 +28,7 @@ function GameScreen({ userNumber, onGameOver }) {
 
     useEffect(() => {
         if (currentGuess === userNumber) {
-            onGameOver();
+            onGameOver(guessRounds.length);
         }
     }, [currentGuess, userNumber, onGameOver])
 
@@ -53,7 +53,7 @@ function GameScreen({ userNumber, onGameOver }) {
         }
         const newRndmNum = generateRandomNumber(minBoundary, maxBoundary, currentGuess);
         setCurrentGuess(newRndmNum);
-        setGuessRounds((previousGuessRounds) => [newRndmNum, ...previousGuessRounds ])
+        setGuessRounds((previousGuessRounds) => [newRndmNum, ...previousGuessRounds])
     }
 
     const guessRoundsListLength = guessRounds.length;
@@ -66,23 +66,27 @@ function GameScreen({ userNumber, onGameOver }) {
                 <View style={styles.buttonsContainer}>
                     <View style={styles.btnContainer}>
                         <PrimaryButton onPress={nextGuessHandler.bind(this, 'lower')}>
-                        <Ionicons name="remove-circle-sharp" size={24} color="white" />                        
-                        
+                            <Ionicons name="remove-circle-sharp" size={24} color="white" />
+
                         </PrimaryButton>
                     </View>
                     <View style={styles.btnContainer}>
                         <PrimaryButton onPress={nextGuessHandler.bind(this, 'higher')}>
-                         <Ionicons name="add-circle" size={24} color="white" />
+                            <Ionicons name="add-circle" size={24} color="white" />
                         </PrimaryButton>
                     </View>
                 </View>
             </Card>
-            <View>
+            <View style={styles.listContainer}>
                 {/* {guessRounds.map(guessRound => <Text key={guessRound}>{guessRound}</Text>)} */}
-                <FlatList 
-                data={guessRounds} 
-                renderItem={(itemData) => <GuessLogItem roundNum={guessRoundsListLength - itemData.index } guess={itemData.item}/>}
-                keyExtractor={(item) => item}
+                <FlatList
+                    data={guessRounds}
+                    renderItem={
+                        (itemData) => <GuessLogItem
+                            roundNum={guessRoundsListLength - itemData.index}
+                            guess={itemData.item}
+                        />}
+                    keyExtractor={(item) => item}
                 />
             </View>
         </View>
@@ -113,5 +117,9 @@ const styles = StyleSheet.create({
     },
     instructionText: {
         marginBottom: 24
-    }
+    },
+    listContainer: {
+        flex: 1,
+        padding: 16,
+    },
 });
